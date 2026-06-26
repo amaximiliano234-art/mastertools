@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block title %}Categorías - MasterTools{% endblock %}
+{% block content %}
+<div class="container">
+  <h2 class="section-title">Categorías</h2>
+  <div class="cat-grid">
+    {% set emojis = {'Taladros':'🛠️','Amoladoras':'⚙️','Soldadoras':'🔥','Compresores':'💨','Herramientas Manuales':'🔧','Accesorios':'🧰','Kits':'🎒'} %}
+    {% for c in categorias %}
+      <a class="cat-card" href="{{ url_for('productos', categoria=c['id']) }}">
+        <span class="emoji">{{ emojis.get(c['nombre'], '🧰') }}</span>{{ c['nombre'] }}
+      </a>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}

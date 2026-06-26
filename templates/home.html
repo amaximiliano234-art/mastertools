@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% from "_producto_card.html" import tarjeta_producto %}
+{% block title %}MasterTools - Inicio{% endblock %}
+{% block content %}
+
+<div class="banner">
+  <h1>LAS MEJORES HERRAMIENTAS AL MEJOR PRECIO</h1>
+  <p>Calidad, potencia y confianza para cada proyecto.</p>
+  <a href="{{ url_for('productos') }}" class="btn btn-amarillo">VER PRODUCTOS</a>
+</div>
+
+<div class="container">
+  <h2 class="section-title">Categorías destacadas</h2>
+  <div class="cat-grid">
+    {% set emojis = {'Taladros':'🛠️','Amoladoras':'⚙️','Soldadoras':'🔥','Compresores':'💨','Herramientas Manuales':'🔧','Accesorios':'🧰','Kits':'🎒'} %}
+    {% for c in categorias %}
+      <a class="cat-card" href="{{ url_for('productos', categoria=c['id']) }}">
+        <span class="emoji">{{ emojis.get(c['nombre'], '🧰') }}</span>{{ c['nombre'] }}
+      </a>
+    {% endfor %}
+  </div>
+</div>
+
+<div class="container" style="padding-top:0">
+  <h2 class="section-title">Productos destacados</h2>
+  <div class="prod-grid">
+    {% for p in destacados %}
+      {{ tarjeta_producto(p, precio_final) }}
+    {% endfor %}
+  </div>
+  {% if not destacados %}<p class="empty-state">Aún no hay productos destacados.</p>{% endif %}
+</div>
+
+{% endblock %}

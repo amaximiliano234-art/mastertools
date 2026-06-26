@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% from "_producto_card.html" import tarjeta_producto %}
+{% block title %}Productos - MasterTools{% endblock %}
+{% block content %}
+<div class="container">
+  <h2 class="section-title">Productos</h2>
+
+  <form class="filters-bar" method="get">
+    <div>
+      <label>Marca</label>
+      <select name="marca">
+        <option value="">Todas</option>
+        {% for m in marcas %}
+          <option value="{{ m['id'] }}" {% if filtros.get('marca')==m['id']|string %}selected{% endif %}>{{ m['nombre'] }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div>
+      <label>Categoría</label>
+      <select name="categoria">
+        <option value="">Todas</option>
+        {% for c in categorias %}
+          <option value="{{ c['id'] }}" {% if filtros.get('categoria')==c['id']|string %}selected{% endif %}>{{ c['nombre'] }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div>
+      <label>Precio mínimo</label>
+      <input type="number" name="precio_min" value="{{ filtros.get('precio_min','') }}">
+    </div>
+    <div>
+      <label>Precio máximo</label>
+      <input type="number" name="precio_max" value="{{ filtros.get('precio_max','') }}">
+    </div>
+    <input type="hidden" name="q" value="{{ filtros.get('q','') }}">
+    <button type="submit" class="btn btn-amarillo">Filtrar</button>
+    <a href="{{ url_for('productos') }}" class="btn btn-outline">Limpiar</a>
+  </form>
+
+  <div class="prod-grid">
+    {% for p in productos %}
+      {{ tarjeta_producto(p, precio_final) }}
+    {% endfor %}
+  </div>
+  {% if not productos %}<p class="empty-state">No se encontraron productos con esos filtros.</p>{% endif %}
+</div>
+{% endblock %}

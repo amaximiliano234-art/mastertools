@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% block title %}Carrito - MasterTools{% endblock %}
+{% block content %}
+<div class="container">
+  <h2 class="section-title">Carrito de compras</h2>
+
+  {% if items %}
+  <table class="cart-table">
+    <thead>
+      <tr><th>Producto</th><th>Cantidad</th><th>Precio</th><th>Subtotal</th><th></th></tr>
+    </thead>
+    <tbody>
+      {% for it in items %}
+      <tr>
+        <td>{{ it.producto['nombre'] }}</td>
+        <td>
+          <form action="{{ url_for('actualizar_carrito', producto_id=it.producto['id']) }}" method="post" style="display:flex;gap:6px;">
+            <input type="number" name="cantidad" value="{{ it.cantidad }}" min="0" style="width:60px;padding:6px;border-radius:6px;border:1px solid var(--gris-borde);background:var(--negro-3);color:var(--texto);">
+            <button type="submit" class="btn btn-outline btn-sm">Actualizar</button>
+          </form>
+        </td>
+        <td>${{ '{:,.0f}'.format(it.precio) }}</td>
+        <td>${{ '{:,.0f}'.format(it.subtotal) }}</td>
+        <td><a href="{{ url_for('eliminar_carrito', producto_id=it.producto['id']) }}" class="btn btn-rojo btn-sm">Eliminar</a></td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  <div class="cart-summary">
+    <div class="row"><span>Subtotal</span><span>${{ '{:,.0f}'.format(subtotal) }}</span></div>
+    <div class="row"><span>Costo de envío</span><span>${{ '{:,.0f}'.format(envio) }}</span></div>
+    <div class="row total"><span>TOTAL</span><span>${{ '{:,.0f}'.format(total) }}</span></div>
+  </div>
+
+  <div class="flex-between mt-20">
+    <a href="{{ url_for('productos') }}" class="btn btn-outline">Seguir comprando</a>
+    <form action="{{ url_for('enviar_pedido') }}" method="post">
+      <button type="submit" class="btn btn-amarillo">Enviar pedido</button>
+    </form>
+  </div>
+  {% else %}
+    <p class="empty-state">Tu carrito está vacío.</p>
+    <div class="text-center"><a href="{{ url_for('productos') }}" class="btn btn-amarillo">Ver productos</a></div>
+  {% endif %}
+</div>
+{% endblock %}

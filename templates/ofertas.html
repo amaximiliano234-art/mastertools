@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% from "_producto_card.html" import tarjeta_producto %}
+{% block title %}Ofertas - MasterTools{% endblock %}
+{% block content %}
+<div class="container">
+  <h2 class="section-title">Ofertas especiales</h2>
+  <div class="prod-grid">
+    {% for p in productos %}
+      {{ tarjeta_producto(p, precio_final) }}
+    {% endfor %}
+  </div>
+  {% if not productos %}<p class="empty-state">No hay ofertas activas en este momento.</p>{% endif %}
+</div>
+{% endblock %}

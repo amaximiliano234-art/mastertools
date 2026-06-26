@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block title %}Mis pedidos - MasterTools{% endblock %}
+{% block content %}
+<div class="container">
+  <h2 class="section-title">Historial de pedidos</h2>
+  {% if pedidos %}
+  <table>
+    <thead><tr><th>Pedido</th><th>Fecha</th><th>Estado</th><th>Total</th></tr></thead>
+    <tbody>
+      {% for pe in pedidos %}
+      <tr>
+        <td>#{{ pe['id'] }}</td>
+        <td>{{ pe['fecha'] }}</td>
+        <td><span class="estado-badge estado-{{ pe['estado'] }}">{{ pe['estado'] }}</span></td>
+        <td>${{ '{:,.0f}'.format(pe['total']) }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+    <p class="empty-state">Todavía no tienes pedidos.</p>
+  {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{% block title %}MasterTools{% endblock %}</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+
+<header class="site-header">
+  <a href="{{ url_for('home') }}" class="logo"><span class="mt">MT</span> MASTERTOOLS</a>
+
+  <form class="search-form" action="{{ url_for('productos') }}" method="get">
+    <input type="text" name="q" placeholder="Buscar productos..." value="{{ request.args.get('q','') }}">
+    <button type="submit">🔍</button>
+  </form>
+
+  <div class="header-actions">
+    <a href="{{ url_for('ver_carrito') }}" class="cart-icon">🛒
+      {% if cantidad_carrito > 0 %}<span class="cart-badge">{{ cantidad_carrito }}</span>{% endif %}
+    </a>
+    {% if usuario_actual %}
+      <a href="{{ url_for('historial_pedidos') }}" class="btn btn-outline btn-sm">Mis pedidos</a>
+      {% if usuario_actual['es_admin'] %}
+        <a href="{{ url_for('admin_dashboard') }}" class="btn btn-outline btn-sm">Panel admin</a>
+      {% endif %}
+      <a href="{{ url_for('logout') }}" class="btn btn-amarillo btn-sm">Salir</a>
+    {% else %}
+      <a href="{{ url_for('login') }}" class="btn btn-amarillo btn-sm">Iniciar sesión</a>
+    {% endif %}
+  </div>
+</header>
+
+<nav class="main-menu">
+  <a href="{{ url_for('home') }}">Inicio</a>
+  <a href="{{ url_for('productos') }}">Productos</a>
+  <a href="{{ url_for('ofertas') }}">Ofertas</a>
+  <a href="{{ url_for('categorias_page') }}">Categorías</a>
+  <a href="{{ url_for('contacto') }}">Contacto</a>
+</nav>
+
+<div class="flash-container">
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% for category, message in messages %}
+      <div class="flash flash-{{ category }}">{{ message }}</div>
+    {% endfor %}
+  {% endwith %}
+</div>
+
+{% block content %}{% endblock %}
+
+<footer class="site-footer">
+  <div class="footer-grid">
+    <div>
+      <h4>MasterTools</h4>
+      <p style="color:var(--texto-sec)">Las mejores herramientas para profesionales.</p>
+    </div>
+    <div>
+      <h4>Enlaces rápidos</h4>
+      <ul>
+        <li><a href="{{ url_for('home') }}">Inicio</a></li>
+        <li><a href="{{ url_for('productos') }}">Productos</a></li>
+        <li><a href="{{ url_for('ofertas') }}">Ofertas</a></li>
+        <li><a href="{{ url_for('contacto') }}">Contacto</a></li>
+      </ul>
+    </div>
+    <div>
+      <h4>Redes sociales</h4>
+      <ul>
+        <li><a href="#" target="_blank">Facebook</a></li>
+        <li><a href="#" target="_blank">Instagram</a></li>
+        <li><a href="#" target="_blank">WhatsApp</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">© 2026 MasterTools. Todos los derechos reservados.</div>
+</footer>
+
+</body>
+</html>

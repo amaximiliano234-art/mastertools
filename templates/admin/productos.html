@@ -1,0 +1,28 @@
+{% extends "admin/base_admin.html" %}
+{% block title %}Productos - Admin{% endblock %}
+{% block content %}
+<div class="admin-topbar">
+  <h1>Productos</h1>
+  <a href="{{ url_for('admin_nuevo_producto') }}" class="btn btn-amarillo">+ Agregar producto</a>
+</div>
+<table>
+  <thead><tr><th>Producto</th><th>Categoría</th><th>Marca</th><th>Precio</th><th>Stock</th><th>Estado</th><th>Acciones</th></tr></thead>
+  <tbody>
+    {% for p in productos %}
+    <tr>
+      <td>{{ p['nombre'] }}<br><small style="color:var(--texto-sec)">SKU: {{ p['sku'] }}</small></td>
+      <td>{{ p['categoria_nombre'] or '-' }}</td>
+      <td>{{ p['marca_nombre'] or '-' }}</td>
+      <td>${{ '{:,.0f}'.format(p['precio']) }}</td>
+      <td>{{ p['stock'] }}</td>
+      <td><span class="estado-badge estado-{{ 'Activo' if p['activo'] else 'Inactivo' }}">{{ 'Activo' if p['activo'] else 'Inactivo' }}</span></td>
+      <td style="display:flex;gap:6px;">
+        <a href="{{ url_for('admin_editar_producto', producto_id=p['id']) }}" class="btn btn-outline btn-sm">✏️</a>
+        <a href="{{ url_for('admin_eliminar_producto', producto_id=p['id']) }}" class="btn btn-rojo btn-sm" onclick="return confirm('¿Eliminar este producto?')">🗑️</a>
+        <a href="{{ url_for('detalle_producto', producto_id=p['id']) }}" class="btn btn-outline btn-sm" target="_blank">👁️</a>
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

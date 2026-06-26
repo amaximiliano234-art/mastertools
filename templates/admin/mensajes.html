@@ -1,0 +1,19 @@
+{% extends "admin/base_admin.html" %}
+{% block title %}Mensajes - Admin{% endblock %}
+{% block content %}
+<h1>Mensajes de contacto</h1>
+<table>
+  <thead><tr><th>Nombre</th><th>Correo</th><th>Mensaje</th><th>Fecha</th></tr></thead>
+  <tbody>
+    {% for m in mensajes %}
+    <tr>
+      <td>{{ m['nombre'] }}</td>
+      <td>{{ m['correo'] }}</td>
+      <td>{{ m['mensaje'] }}</td>
+      <td>{{ m['fecha'] }}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% if not mensajes %}<p class="empty-state">No hay mensajes todavía.</p>{% endif %}
+{% endblock %}

@@ -1,0 +1,21 @@
+{% extends "admin/base_admin.html" %}
+{% block title %}Pedidos - Admin{% endblock %}
+{% block content %}
+<h1>Pedidos</h1>
+<table>
+  <thead><tr><th>Pedido</th><th>Cliente</th><th>Fecha</th><th>Estado</th><th>Total</th><th></th></tr></thead>
+  <tbody>
+    {% for pe in pedidos %}
+    <tr>
+      <td>#{{ pe['id'] }}</td>
+      <td>{{ pe['cliente_nombre'] }} {{ pe['cliente_apellido'] }}</td>
+      <td>{{ pe['fecha'] }}</td>
+      <td><span class="estado-badge estado-{{ pe['estado'] }}">{{ pe['estado'] }}</span></td>
+      <td>${{ '{:,.0f}'.format(pe['total']) }}</td>
+      <td><a href="{{ url_for('admin_detalle_pedido', pedido_id=pe['id']) }}" class="btn btn-outline btn-sm">Ver</a></td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% if not pedidos %}<p class="empty-state">Todavía no hay pedidos.</p>{% endif %}
+{% endblock %}

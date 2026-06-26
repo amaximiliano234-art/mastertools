@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block title %}{{ p['nombre'] }} - MasterTools{% endblock %}
+{% block content %}
+<div class="container">
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:30px;">
+    <div class="prod-img" style="height:320px;font-size:80px;border-radius:10px;">🛠️</div>
+    <div>
+      {% if p['oferta'] %}<span class="badge-oferta">OFERTA</span>{% endif %}
+      <h1>{{ p['nombre'] }}</h1>
+      <p style="color:var(--texto-sec)">SKU: {{ p['sku'] }}</p>
+      <p>{{ p['descripcion'] }}</p>
+      <div style="margin:16px 0">
+        {% if p['oferta'] and p['precio_oferta'] %}
+          <div class="prod-precio-old">${{ '{:,.0f}'.format(p['precio']) }}</div>
+        {% endif %}
+        <div class="prod-precio" style="font-size:30px">${{ '{:,.0f}'.format(precio_final(p)) }}</div>
+      </div>
+      <p class="prod-stock">{% if p['stock'] > 0 %}Stock disponible: {{ p['stock'] }} unidades{% else %}Sin stock{% endif %}</p>
+      <form action="{{ url_for('agregar_carrito', producto_id=p['id']) }}" method="post" style="display:flex;gap:10px;margin-top:16px;align-items:center;">
+        <input type="number" name="cantidad" value="1" min="1" max="{{ p['stock'] }}" style="width:80px;padding:10px;border-radius:8px;border:1px solid var(--gris-borde);background:var(--negro-3);color:var(--texto);">
+        <button type="submit" class="btn btn-amarillo" {% if p['stock']==0 %}disabled{% endif %}>Agregar al carrito</button>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

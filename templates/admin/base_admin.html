@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{% block title %}Panel Admin - MasterTools{% endblock %}</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+<div class="admin-wrap">
+  <aside class="admin-sidebar">
+    <div class="brand"><span style="background:var(--amarillo);color:#16181c;padding:3px 7px;border-radius:6px;">MT</span> MASTERTOOLS</div>
+    <a href="{{ url_for('admin_dashboard') }}" class="{{ 'active' if request.endpoint=='admin_dashboard' }}">🏠 Dashboard</a>
+    <a href="{{ url_for('admin_productos') }}" class="{{ 'active' if 'producto' in request.endpoint and 'admin' in request.endpoint }}">📦 Productos</a>
+    <a href="{{ url_for('admin_categorias') }}" class="{{ 'active' if request.endpoint=='admin_categorias' }}">🗂️ Categorías</a>
+    <a href="{{ url_for('admin_marcas') }}" class="{{ 'active' if request.endpoint=='admin_marcas' }}">🏷️ Marcas</a>
+    <a href="{{ url_for('admin_pedidos') }}" class="{{ 'active' if 'pedido' in request.endpoint }}">🛒 Pedidos</a>
+    <a href="{{ url_for('admin_clientes') }}" class="{{ 'active' if request.endpoint=='admin_clientes' }}">👥 Clientes</a>
+    <a href="{{ url_for('admin_mensajes') }}" class="{{ 'active' if request.endpoint=='admin_mensajes' }}">✉️ Mensajes</a>
+    <a href="{{ url_for('home') }}">🌐 Ver tienda</a>
+    <a href="{{ url_for('logout') }}">🚪 Cerrar sesión</a>
+  </aside>
+  <main class="admin-main">
+    <div class="flash-container" style="padding:0;margin-bottom:20px;">
+      {% with messages = get_flashed_messages(with_categories=true) %}
+        {% for category, message in messages %}
+          <div class="flash flash-{{ category }}">{{ message }}</div>
+        {% endfor %}
+      {% endwith %}
+    </div>
+    {% block content %}{% endblock %}
+  </main>
+</div>
+</body>
+</html>

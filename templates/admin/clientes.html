@@ -1,0 +1,20 @@
+{% extends "admin/base_admin.html" %}
+{% block title %}Clientes - Admin{% endblock %}
+{% block content %}
+<h1>Clientes</h1>
+<table>
+  <thead><tr><th>Nombre</th><th>Correo</th><th>Teléfono</th><th>Dirección</th><th>Registrado</th></tr></thead>
+  <tbody>
+    {% for c in clientes %}
+    <tr>
+      <td>{{ c['nombre'] }} {{ c['apellido'] }}</td>
+      <td>{{ c['correo'] }}</td>
+      <td>{{ c['telefono'] or '-' }}</td>
+      <td>{{ c['direccion'] or '-' }}</td>
+      <td>{{ c['creado'] }}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% if not clientes %}<p class="empty-state">Todavía no hay clientes registrados.</p>{% endif %}
+{% endblock %}

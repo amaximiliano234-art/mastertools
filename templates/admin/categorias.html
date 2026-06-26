@@ -1,0 +1,22 @@
+{% extends "admin/base_admin.html" %}
+{% block title %}Categorías - Admin{% endblock %}
+{% block content %}
+<h1>Categorías</h1>
+<div class="form-box" style="margin:0 0 24px 0;">
+  <form method="post" style="display:flex;gap:10px;">
+    <input type="text" name="nombre" placeholder="Nombre de la categoría" required style="flex:1;padding:10px;border-radius:8px;border:1px solid var(--gris-borde);background:var(--negro-3);color:var(--texto);">
+    <button type="submit" class="btn btn-amarillo">Agregar</button>
+  </form>
+</div>
+<table>
+  <thead><tr><th>Categoría</th><th>Acciones</th></tr></thead>
+  <tbody>
+    {% for c in categorias %}
+    <tr>
+      <td>{{ c['nombre'] }}</td>
+      <td><a href="{{ url_for('admin_eliminar_categoria', cat_id=c['id']) }}" class="btn btn-rojo btn-sm" onclick="return confirm('¿Eliminar categoría?')">Eliminar</a></td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

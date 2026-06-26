@@ -1,0 +1,23 @@
+{% macro tarjeta_producto(p, precio_final) %}
+<div class="prod-card">
+  <div class="prod-img">🛠️</div>
+  <div class="prod-body">
+    {% if p['oferta'] %}<span class="badge-oferta">OFERTA</span>{% endif %}
+    <h3>{{ p['nombre'] }}</h3>
+    <div>
+      {% if p['oferta'] and p['precio_oferta'] %}
+        <span class="prod-precio-old">${{ '{:,.0f}'.format(p['precio']) }}</span>
+      {% endif %}
+      <span class="prod-precio">${{ '{:,.0f}'.format(precio_final(p)) }}</span>
+    </div>
+    <span class="prod-stock">{% if p['stock'] > 0 %}Stock disponible: {{ p['stock'] }}{% else %}Sin stock{% endif %}</span>
+    <div class="prod-actions">
+      <form action="{{ url_for('agregar_carrito', producto_id=p['id']) }}" method="post">
+        <input type="hidden" name="cantidad" value="1">
+        <button type="submit" class="btn btn-amarillo" {% if p['stock']==0 %}disabled{% endif %}>Agregar</button>
+      </form>
+      <a href="{{ url_for('detalle_producto', producto_id=p['id']) }}" class="btn btn-outline">Ver detalle</a>
+    </div>
+  </div>
+</div>
+{% endmacro %}

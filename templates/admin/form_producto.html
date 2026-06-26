@@ -1,0 +1,46 @@
+{% extends "admin/base_admin.html" %}
+{% block title %}{{ 'Editar' if p else 'Nuevo' }} producto - Admin{% endblock %}
+{% block content %}
+<h1>{{ 'Editar producto' if p else 'Agregar producto' }}</h1>
+<div class="form-box wide">
+  <form method="post">
+    <div class="form-row">
+      <div class="form-group"><label>Nombre</label><input type="text" name="nombre" value="{{ p['nombre'] if p else '' }}" required></div>
+      <div class="form-group"><label>SKU</label><input type="text" name="sku" value="{{ p['sku'] if p else '' }}" required></div>
+    </div>
+    <div class="form-group"><label>Descripción</label><textarea name="descripcion" rows="3">{{ p['descripcion'] if p else '' }}</textarea></div>
+    <div class="form-row">
+      <div class="form-group"><label>Precio</label><input type="number" step="0.01" name="precio" value="{{ p['precio'] if p else '' }}" required></div>
+      <div class="form-group"><label>Stock</label><input type="number" name="stock" value="{{ p['stock'] if p else '' }}" required></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>Categoría</label>
+        <select name="categoria_id">
+          <option value="">-- Seleccionar --</option>
+          {% for c in categorias %}
+            <option value="{{ c['id'] }}" {% if p and p['categoria_id']==c['id'] %}selected{% endif %}>{{ c['nombre'] }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Marca</label>
+        <select name="marca_id">
+          <option value="">-- Seleccionar --</option>
+          {% for m in marcas %}
+            <option value="{{ m['id'] }}" {% if p and p['marca_id']==m['id'] %}selected{% endif %}>{{ m['nombre'] }}</option>
+          {% endfor %}
+        </select>
+      </div>
+    </div>
+    <div class="checkbox-row"><input type="checkbox" name="destacado" {% if p and p['destacado'] %}checked{% endif %}> <label style="margin:0">Producto destacado</label></div>
+    <div class="checkbox-row"><input type="checkbox" name="oferta" id="oferta-chk" {% if p and p['oferta'] %}checked{% endif %}> <label style="margin:0">Está en oferta</label></div>
+    <div class="form-group"><label>Precio de oferta</label><input type="number" step="0.01" name="precio_oferta" value="{{ p['precio_oferta'] if p and p['precio_oferta'] else '' }}"></div>
+    {% if p %}
+    <div class="checkbox-row"><input type="checkbox" name="activo" {% if p['activo'] %}checked{% endif %}> <label style="margin:0">Producto activo</label></div>
+    {% endif %}
+    <button type="submit" class="btn btn-amarillo">{{ 'Guardar cambios' if p else 'Agregar producto' }}</button>
+    <a href="{{ url_for('admin_productos') }}" class="btn btn-outline">Cancelar</a>
+  </form>
+</div>
+{% endblock %}

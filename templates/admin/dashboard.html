@@ -1,0 +1,32 @@
+{% extends "admin/base_admin.html" %}
+{% block title %}Dashboard - Admin{% endblock %}
+{% block content %}
+<div class="admin-topbar">
+  <h1>Dashboard</h1>
+  <a href="{{ url_for('admin_nuevo_producto') }}" class="btn btn-amarillo">+ Agregar producto</a>
+</div>
+
+<div class="kpi-grid">
+  <div class="kpi-card"><div class="label">Ventas totales</div><div class="value">${{ '{:,.0f}'.format(ventas) }}</div></div>
+  <div class="kpi-card"><div class="label">Pedidos</div><div class="value">{{ pedidos }}</div></div>
+  <div class="kpi-card"><div class="label">Productos</div><div class="value">{{ productos_count }}</div></div>
+  <div class="kpi-card"><div class="label">Clientes</div><div class="value">{{ clientes }}</div></div>
+</div>
+
+<h2 class="section-title">Últimos productos agregados</h2>
+<table>
+  <thead><tr><th>Producto</th><th>Categoría</th><th>Marca</th><th>Precio</th><th>Stock</th><th>Estado</th></tr></thead>
+  <tbody>
+    {% for p in ultimos_productos %}
+    <tr>
+      <td>{{ p['nombre'] }}<br><small style="color:var(--texto-sec)">SKU: {{ p['sku'] }}</small></td>
+      <td>{{ p['categoria_nombre'] or '-' }}</td>
+      <td>{{ p['marca_nombre'] or '-' }}</td>
+      <td>${{ '{:,.0f}'.format(p['precio']) }}</td>
+      <td>{{ p['stock'] }}</td>
+      <td><span class="estado-badge estado-{{ 'Activo' if p['activo'] else 'Inactivo' }}">{{ 'Activo' if p['activo'] else 'Inactivo' }}</span></td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}
