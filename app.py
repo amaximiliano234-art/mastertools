@@ -592,32 +592,3 @@ if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000, debug=True)
 else:
     init_db()
-
-Archivo 2: templates/_producto_card.htmlMostrar contenido completo de _producto_card.htmlMostrar contenido completo de _producto_card.htmlhtml{% macro tarjeta_producto(p, precio_final) %}
-<div class="prod-card">
-  {% if p['imagen'] and p['imagen'] != 'producto_default.png' %}
-    <div class="prod-img" style="padding:0;overflow:hidden;">
-      <img src="{{ url_for('static', filename='img/productos/' + p['imagen']) }}" style="width:100%;height:160px;object-fit:cover;">
-    </div>
-  {% else %}
-    <div class="prod-img">🛠️</div>
-  {% endif %}
-  <div class="prod-body">
-    {% if p['oferta'] %}<span class="badge-oferta">OFERTA</span>{% endif %}
-    <h3>{{ p['nombre'] }}</h3>
-    <div>
-      {% if p['oferta'] and p['precio_oferta'] %}
-        <span class="prod-precio-old">${{ '{:,.0f}'.format(p['precio']) }}</span>
-      {% endif %}
-      <span class="prod-precio">${{ '{:,.0f}'.format(precio_final(p)) }}</span>
-    </div>
-    <span class="prod-stock">{% if p['stock'] > 0 %}Stock disponible: {{ p['stock'] }}{% else %}Sin stock{% endif %}</span>
-    <div class="prod-actions">
-      <form action="{{ url_for('agregar_carrito', producto_id=p['id']) }}" method="post">
-        <input type="hidden" name="cantidad" value="1">
-        <button type="submit" class="btn btn-amarillo" {% if p['stock']==0 %}disabled{% endif %}>Agregar</button>
-      </form>
-      <a href="{{ url_for('detalle_producto', producto_id=p['id']) }}" class="btn btn-outline">Ver detalle</a>
-    </div>
-  </div>
-</div>
