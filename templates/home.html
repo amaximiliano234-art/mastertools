@@ -1,12 +1,31 @@
-{% extends "base.html" %}
+html{% extends "base.html" %}
 {% from "_producto_card.html" import tarjeta_producto %}
 {% block title %}MasterTools - Inicio{% endblock %}
 {% block content %}
 
-<div class="banner">
-  <h1>LAS MEJORES HERRAMIENTAS AL MEJOR PRECIO</h1>
-  <p>Calidad, potencia y confianza para cada proyecto.</p>
-  <a href="{{ url_for('productos') }}" class="btn btn-amarillo">VER PRODUCTOS</a>
+<div class="banner-pro">
+  <div class="banner-pro-bg"></div>
+  <div class="banner-pro-content">
+    <h1>LAS MEJORES<br>HERRAMIENTAS<br>AL MEJOR PRECIO</h1>
+    <p>Calidad, potencia y confianza para cada proyecto.</p>
+    <a href="{{ url_for('productos') }}" class="btn btn-amarillo">VER PRODUCTOS</a>
+  </div>
+  <div class="banner-pro-img">
+    <!-- Para usar tu propia foto de producto: reemplazá este bloque <svg> por
+         <img src="{{ url_for('static', filename='img/banner-producto.jpg') }}" alt="Producto destacado">
+         y subí tu foto a la carpeta static/img con ese nombre. -->
+    <svg viewBox="0 0 360 360" xmlns="http://www.w3.org/2000/svg" class="drill-illustration">
+      <ellipse cx="180" cy="330" rx="140" ry="18" fill="#000" opacity="0.25"/>
+      <rect x="70" y="150" width="170" height="60" rx="14" fill="#1c1f26" stroke="#FFC107" stroke-width="3"/>
+      <rect x="230" y="160" width="70" height="40" rx="8" fill="#FFC107"/>
+      <rect x="120" y="205" width="55" height="95" rx="12" fill="#1c1f26" stroke="#FFC107" stroke-width="3"/>
+      <rect x="128" y="300" width="40" height="14" rx="4" fill="#FFC107"/>
+      <rect x="295" y="172" width="55" height="16" rx="4" fill="#9aa0ab"/>
+      <polygon points="350,180 360,180 352,168 352,192" fill="#c8ccd2"/>
+      <circle cx="100" cy="180" r="14" fill="#FFC107"/>
+      <circle cx="100" cy="180" r="6" fill="#1c1f26"/>
+    </svg>
+  </div>
 </div>
 
 <div class="container">
