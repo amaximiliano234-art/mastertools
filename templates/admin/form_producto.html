@@ -3,7 +3,17 @@
 {% block content %}
 <h1>{{ 'Editar producto' if p else 'Agregar producto' }}</h1>
 <div class="form-box wide">
-  <form method="post">
+  <form method="post" enctype="multipart/form-data">
+    <div class="form-group">
+      <label>Foto del producto</label>
+      {% if p and p['imagen'] and p['imagen'] != 'producto_default.png' %}
+        <div style="margin-bottom:10px;">
+          <img src="{{ url_for('static', filename='img/productos/' + p['imagen']) }}" style="width:120px;border-radius:8px;border:1px solid var(--gris-borde);">
+        </div>
+      {% endif %}
+      <input type="file" name="imagen" accept=".jpg,.jpeg,.png,.webp,.gif">
+      <small style="color:var(--texto-sec)">Formatos permitidos: JPG, PNG, WEBP o GIF. {% if p %}Dejá este campo vacío si no querés cambiar la foto actual.{% endif %}</small>
+    </div>
     <div class="form-row">
       <div class="form-group"><label>Nombre</label><input type="text" name="nombre" value="{{ p['nombre'] if p else '' }}" required></div>
       <div class="form-group"><label>SKU</label><input type="text" name="sku" value="{{ p['sku'] if p else '' }}" required></div>
