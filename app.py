@@ -3,14 +3,37 @@ import sqlite3
 from datetime import datetime
 from flask import Flask, render_template, request, redirect, url_for, session, g, flash, jsonify
 from werkzeug.security import generate_password_hash, check_password_hash
+from werkzeug.utils import secure_filename
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 DB_PATH = os.path.join(BASE_DIR, "mastertools.db")
+UPLOAD_FOLDER = os.path.join(BASE_DIR, "static", "img", "productos")
+EXTENSIONES_PERMITIDAS = {"png", "jpg", "jpeg", "webp", "gif"}
 
 app = Flask(__name__)
-app.secret_key = "cambia-esta-clave-por-una-segura-mastertools-2026"
+app.secret_key = os.environ.get("SECRET_KEY", "cambia-esta-clave-por-una-segura-mastertools-2026")
 
 COSTO_ENVIO = 5000  # envío fijo de ejemplo, en pesos
+
+os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+
+
+def extension_permitida(nombre_archivo):
+    return "." in nombre_archivo and nombre_archivo.rsplit(".", 1)[1].lower() in EXTENSIONES_PERMITIDAS
+
+
+def guardar_imagen_producto(archivo, sku):
+    """Guarda la imagen subida y devuelve el nombre de archivo para guardar en la base de datos."""
+    if not archivo or archivo.filename == "":
+        return None
+    if not extension_permitida(archivo.filename):
+        flash("Formato de imagen no permitido. Usá JPG, PNG, WEBP o GIF.", "error")
+        return None
+    extension = archivo.filename.rsplit(".", 1)[1].lower()
+    nombre_seguro = secure_filename(f"{sku}.{extension}") or f"producto.{extension}"
+    ruta_destino = os.path.join(UPLOAD_FOLDER, nombre_seguro)
+    archivo.save(ruta_destino)
+    return nombre_seguro
 
 
 # ---------------------------------------------------------------------------
@@ -412,15 +435,17 @@ def admin_productos():
 def admin_nuevo_producto():
     db = get_db()
     if request.method == "POST":
+        nombre_imagen = guardar_imagen_producto(request.files.get("imagen"), request.form["sku"])
         db.execute("""INSERT INTO productos (nombre, sku, descripcion, precio, stock, categoria_id,
-                                              marca_id, destacado, oferta, precio_oferta, activo)
-                      VALUES (?,?,?,?,?,?,?,?,?,?,1)""",
+                                              marca_id, destacado, oferta, precio_oferta, activo, imagen)
+                      VALUES (?,?,?,?,?,?,?,?,?,?,1,?)""",
                    (request.form["nombre"], request.form["sku"], request.form.get("descripcion", ""),
                     float(request.form["precio"]), int(request.form["stock"]),
                     request.form.get("categoria_id") or None, request.form.get("marca_id") or None,
                     1 if request.form.get("destacado") else 0,
                     1 if request.form.get("oferta") else 0,
-                    request.form.get("precio_oferta") or None))
+                    request.form.get("precio_oferta") or None,
+                    nombre_imagen or "producto_default.png"))
         db.commit()
         flash("Producto agregado.", "success")
         return redirect(url_for("admin_productos"))
@@ -434,8 +459,11 @@ def admin_nuevo_producto():
 def admin_editar_producto(producto_id):
     db = get_db()
     if request.method == "POST":
+        p_actual = db.execute("SELECT imagen FROM productos WHERE id=?", (producto_id,)).fetchone()
+        nombre_imagen = guardar_imagen_producto(request.files.get("imagen"), request.form["sku"])
+        imagen_final = nombre_imagen or (p_actual["imagen"] if p_actual else "producto_default.png")
         db.execute("""UPDATE productos SET nombre=?, sku=?, descripcion=?, precio=?, stock=?,
-                      categoria_id=?, marca_id=?, destacado=?, oferta=?, precio_oferta=?, activo=?
+                      categoria_id=?, marca_id=?, destacado=?, oferta=?, precio_oferta=?, activo=?, imagen=?
                       WHERE id=?""",
                    (request.form["nombre"], request.form["sku"], request.form.get("descripcion", ""),
                     float(request.form["precio"]), int(request.form["stock"]),
@@ -444,6 +472,7 @@ def admin_editar_producto(producto_id):
                     1 if request.form.get("oferta") else 0,
                     request.form.get("precio_oferta") or None,
                     1 if request.form.get("activo") else 0,
+                    imagen_final,
                     producto_id))
         db.commit()
         flash("Producto actualizado.", "success")
@@ -563,3 +592,32 @@ if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000, debug=True)
 else:
     init_db()
+
+Archivo 2: templates/_producto_card.htmlMostrar contenido completo de _producto_card.htmlMostrar contenido completo de _producto_card.htmlhtml{% macro tarjeta_producto(p, precio_final) %}
+<div class="prod-card">
+  {% if p['imagen'] and p['imagen'] != 'producto_default.png' %}
+    <div class="prod-img" style="padding:0;overflow:hidden;">
+      <img src="{{ url_for('static', filename='img/productos/' + p['imagen']) }}" style="width:100%;height:160px;object-fit:cover;">
+    </div>
+  {% else %}
+    <div class="prod-img">🛠️</div>
+  {% endif %}
+  <div class="prod-body">
+    {% if p['oferta'] %}<span class="badge-oferta">OFERTA</span>{% endif %}
+    <h3>{{ p['nombre'] }}</h3>
+    <div>
+      {% if p['oferta'] and p['precio_oferta'] %}
+        <span class="prod-precio-old">${{ '{:,.0f}'.format(p['precio']) }}</span>
+      {% endif %}
+      <span class="prod-precio">${{ '{:,.0f}'.format(precio_final(p)) }}</span>
+    </div>
+    <span class="prod-stock">{% if p['stock'] > 0 %}Stock disponible: {{ p['stock'] }}{% else %}Sin stock{% endif %}</span>
+    <div class="prod-actions">
+      <form action="{{ url_for('agregar_carrito', producto_id=p['id']) }}" method="post">
+        <input type="hidden" name="cantidad" value="1">
+        <button type="submit" class="btn btn-amarillo" {% if p['stock']==0 %}disabled{% endif %}>Agregar</button>
+      </form>
+      <a href="{{ url_for('detalle_producto', producto_id=p['id']) }}" class="btn btn-outline">Ver detalle</a>
+    </div>
+  </div>
+</div>
