@@ -141,27 +141,37 @@ nav.main-menu a:hover, nav.main-menu a.active{
 }
 .banner p{color:var(--texto-sec);font-size:18px;margin-bottom:28px;}
 
-/* ---------- BANNER PRO (con ilustración) ---------- */
+/* ---------- BANNER PRO (con foto de fondo) ---------- */
 .banner-pro{
   position:relative;
   overflow:hidden;
   display:flex;
   align-items:center;
-  justify-content:space-between;
   min-height:380px;
   border-bottom:1px solid var(--gris-borde);
   padding:0 6%;
 }
 .banner-pro-bg{
   position:absolute;inset:0;
-  background:linear-gradient(100deg, #14161a 0%, #14161a 42%, #0d3b34 42%, #0f6e56 70%, #1d9e75 100%);
+  background-size:cover;
+  background-position:center;
   z-index:0;
+}
+.banner-pro-overlay{
+  position:absolute;inset:0;
+  background:linear-gradient(95deg,
+    rgba(10,11,14,.96) 0%,
+    rgba(10,11,14,.93) 30%,
+    rgba(10,11,14,.7) 50%,
+    rgba(10,11,14,.25) 75%,
+    rgba(10,11,14,.05) 100%);
+  z-index:1;
 }
 .banner-pro-content{
   position:relative;
-  z-index:1;
+  z-index:2;
   max-width:480px;
-  padding:40px 0;
+  padding:50px 0;
 }
 .banner-pro-content h1{
   font-size:34px;
@@ -169,27 +179,22 @@ nav.main-menu a:hover, nav.main-menu a.active{
   margin:0 0 14px;
   color:#fff;
   font-weight:800;
+  text-shadow:0 2px 10px rgba(0,0,0,.5);
 }
 .banner-pro-content p{
-  color:#d7d9dc;
+  color:#e2e3e6;
   font-size:17px;
   margin-bottom:26px;
 }
-.banner-pro-img{
-  position:relative;
-  z-index:1;
-  flex-shrink:0;
-  width:300px;
-}
-.drill-illustration{
-  width:100%;
-  height:auto;
-  filter:drop-shadow(0 12px 20px rgba(0,0,0,.35));
-}
 @media (max-width:800px){
-  .banner-pro{flex-direction:column;text-align:center;padding:30px 24px;min-height:auto;}
-  .banner-pro-content{padding:30px 0 0;max-width:100%;}
-  .banner-pro-img{width:220px;padding-bottom:20px;}
+  .banner-pro{padding:0 20px;min-height:320px;}
+  .banner-pro-overlay{
+    background:linear-gradient(180deg,
+      rgba(10,11,14,.6) 0%,
+      rgba(10,11,14,.85) 60%,
+      rgba(10,11,14,.96) 100%);
+  }
+  .banner-pro-content{padding:30px 0;max-width:100%;}
 }
 
 /* ---------- CONTAINERS ---------- */
