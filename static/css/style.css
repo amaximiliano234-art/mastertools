@@ -370,3 +370,25 @@ footer.site-footer{
   .whatsapp-float{width:52px;height:52px;bottom:16px;right:16px;}
   .whatsapp-float svg{width:26px;height:26px;}
 }
+
+/* ---------- SELECTOR DE ESTRELLAS ---------- */
+.estrellas-input{
+  display:flex;
+  flex-direction:row-reverse;
+  gap:4px;
+  width:max-content;
+}
+.estrellas-input input{
+  display:none;
+}
+.estrellas-input label{
+  font-size:30px;
+  color:var(--gris-borde);
+  cursor:pointer;
+  transition:.15s;
+}
+.estrellas-input input:checked ~ label,
+.estrellas-input label:hover,
+.estrellas-input label:hover ~ label{
+  color:var(--amarillo);
+}
