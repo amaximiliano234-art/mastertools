@@ -10,6 +10,10 @@
   <div class="prod-body">
     {% if p['oferta'] %}<span class="badge-oferta">OFERTA</span>{% endif %}
     <h3>{{ p['nombre'] }}</h3>
+    <div style="color:var(--amarillo);font-size:13px;">
+      {{ estrellas_html(p['promedio']) }}
+      {% if p['total_resenas'] %}<span style="color:var(--texto-sec)">({{ p['total_resenas'] }})</span>{% endif %}
+    </div>
     <div>
       {% if p['oferta'] and p['precio_oferta'] %}
         <span class="prod-precio-old">${{ '{:,.0f}'.format(p['precio']) }}</span>
