@@ -70,3 +70,15 @@ CREATE TABLE IF NOT EXISTS mensajes_contacto (
     mensaje TEXT NOT NULL,
     fecha TEXT DEFAULT CURRENT_TIMESTAMP
 );
+
+CREATE TABLE IF NOT EXISTS resenas (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    producto_id INTEGER NOT NULL,
+    usuario_id INTEGER NOT NULL,
+    calificacion INTEGER NOT NULL CHECK (calificacion BETWEEN 1 AND 5),
+    comentario TEXT,
+    fecha TEXT DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (producto_id) REFERENCES productos(id),
+    FOREIGN KEY (usuario_id) REFERENCES usuarios(id),
+    UNIQUE (producto_id, usuario_id)
+);
