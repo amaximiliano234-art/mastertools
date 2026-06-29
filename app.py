@@ -170,6 +170,17 @@ def precio_final(p):
     return p["precio_oferta"] if p["oferta"] and p["precio_oferta"] else p["precio"]
 
 
+def estrellas_html(promedio):
+    """Devuelve una cadena con estrellas llenas/vacías según el promedio (0 a 5)."""
+    if not promedio:
+        return "☆☆☆☆☆"
+    llenas = round(promedio)
+    return "★" * llenas + "☆" * (5 - llenas)
+
+
+app.jinja_env.globals["estrellas_html"] = estrellas_html
+
+
 # ---------------------------------------------------------------------------
 # RUTAS PÚBLICAS
 # ---------------------------------------------------------------------------
@@ -177,7 +188,10 @@ def precio_final(p):
 def home():
     db = get_db()
     destacados = db.execute(
-        "SELECT * FROM productos WHERE destacado=1 AND activo=1 LIMIT 8"
+        """SELECT p.*,
+                  (SELECT AVG(calificacion) FROM resenas WHERE producto_id = p.id) AS promedio,
+                  (SELECT COUNT(*) FROM resenas WHERE producto_id = p.id) AS total_resenas
+           FROM productos p WHERE destacado=1 AND activo=1 LIMIT 8"""
     ).fetchall()
     categorias = db.execute("SELECT * FROM categorias").fetchall()
     return render_template("home.html", destacados=destacados, categorias=categorias,
@@ -193,7 +207,9 @@ def productos():
     p_min = request.args.get("precio_min", "")
     p_max = request.args.get("precio_max", "")
 
-    sql = """SELECT p.*, c.nombre AS categoria_nombre, m.nombre AS marca_nombre
+    sql = """SELECT p.*, c.nombre AS categoria_nombre, m.nombre AS marca_nombre,
+                    (SELECT AVG(calificacion) FROM resenas WHERE producto_id = p.id) AS promedio,
+                    (SELECT COUNT(*) FROM resenas WHERE producto_id = p.id) AS total_resenas
              FROM productos p
              LEFT JOIN categorias c ON p.categoria_id = c.id
              LEFT JOIN marcas m ON p.marca_id = m.id
@@ -230,13 +246,64 @@ def detalle_producto(producto_id):
     if not p:
         flash("Producto no encontrado.", "error")
         return redirect(url_for("productos"))
-    return render_template("detalle_producto.html", p=p, precio_final=precio_final)
+
+    resenas = db.execute("""SELECT r.*, u.nombre AS usuario_nombre
+                             FROM resenas r LEFT JOIN usuarios u ON r.usuario_id = u.id
+                             WHERE r.producto_id = ? ORDER BY r.fecha DESC""", (producto_id,)).fetchall()
+    promedio_row = db.execute("""SELECT AVG(calificacion) AS promedio, COUNT(*) AS total
+                                  FROM resenas WHERE producto_id = ?""", (producto_id,)).fetchone()
+    promedio = round(promedio_row["promedio"], 1) if promedio_row["promedio"] else None
+    total_resenas = promedio_row["total"]
+
+    resena_propia = None
+    if "user_id" in session:
+        resena_propia = db.execute("SELECT * FROM resenas WHERE producto_id=? AND usuario_id=?",
+                                    (producto_id, session["user_id"])).fetchone()
+
+    return render_template("detalle_producto.html", p=p, precio_final=precio_final,
+                            resenas=resenas, promedio=promedio, total_resenas=total_resenas,
+                            resena_propia=resena_propia)
+
+
+@app.route("/producto/<int:producto_id>/resena", methods=["POST"])
+@login_required
+def enviar_resena(producto_id):
+    db = get_db()
+    p = db.execute("SELECT id FROM productos WHERE id=?", (producto_id,)).fetchone()
+    if not p:
+        flash("Producto no encontrado.", "error")
+        return redirect(url_for("productos"))
+
+    calificacion = int(request.form.get("calificacion", 0))
+    if calificacion < 1 or calificacion > 5:
+        flash("Elegí una calificación de 1 a 5 estrellas.", "error")
+        return redirect(url_for("detalle_producto", producto_id=producto_id))
+
+    comentario = request.form.get("comentario", "").strip()
+
+    existente = db.execute("SELECT id FROM resenas WHERE producto_id=? AND usuario_id=?",
+                            (producto_id, session["user_id"])).fetchone()
+    if existente:
+        db.execute("UPDATE resenas SET calificacion=?, comentario=?, fecha=CURRENT_TIMESTAMP WHERE id=?",
+                   (calificacion, comentario, existente["id"]))
+        flash("Tu reseña fue actualizada. ¡Gracias por tu opinión!", "success")
+    else:
+        db.execute("INSERT INTO resenas (producto_id, usuario_id, calificacion, comentario) VALUES (?,?,?,?)",
+                   (producto_id, session["user_id"], calificacion, comentario))
+        flash("¡Gracias por tu opinión!", "success")
+    db.commit()
+    return redirect(url_for("detalle_producto", producto_id=producto_id))
 
 
 @app.route("/ofertas")
 def ofertas():
     db = get_db()
-    lista = db.execute("SELECT * FROM productos WHERE oferta=1 AND activo=1").fetchall()
+    lista = db.execute(
+        """SELECT p.*,
+                  (SELECT AVG(calificacion) FROM resenas WHERE producto_id = p.id) AS promedio,
+                  (SELECT COUNT(*) FROM resenas WHERE producto_id = p.id) AS total_resenas
+           FROM productos p WHERE oferta=1 AND activo=1"""
+    ).fetchall()
     return render_template("ofertas.html", productos=lista, precio_final=precio_final)
 
 
