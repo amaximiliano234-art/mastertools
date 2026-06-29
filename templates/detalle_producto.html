@@ -11,6 +11,14 @@
     <div>
       {% if p['oferta'] %}<span class="badge-oferta">OFERTA</span>{% endif %}
       <h1>{{ p['nombre'] }}</h1>
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:4px;">
+        <span style="color:var(--amarillo);font-size:20px;letter-spacing:2px;">{{ estrellas_html(promedio) }}</span>
+        {% if promedio %}
+          <span style="color:var(--texto-sec)">{{ promedio }} de 5 ({{ total_resenas }} opinion{{ 'es' if total_resenas != 1 else '' }})</span>
+        {% else %}
+          <span style="color:var(--texto-sec)">Sin opiniones todavía</span>
+        {% endif %}
+      </div>
       <p style="color:var(--texto-sec)">SKU: {{ p['sku'] }}</p>
       <p>{{ p['descripcion'] }}</p>
       <div style="margin:16px 0">
@@ -25,6 +33,56 @@
         <button type="submit" class="btn btn-amarillo" {% if p['stock']==0 %}disabled{% endif %}>Agregar al carrito</button>
       </form>
     </div>
+  </div>
+
+  <!-- ---------- OPINIONES DEL PRODUCTO ---------- -->
+  <div style="margin-top:50px;">
+    <h2 class="section-title">Opiniones del producto</h2>
+
+    {% if usuario_actual %}
+      <div class="form-box wide" style="margin:0 0 30px 0;">
+        <h3 style="margin-top:0;">{{ 'Editá tu reseña' if resena_propia else 'Dejá tu opinión' }}</h3>
+        <form method="post" action="{{ url_for('enviar_resena', producto_id=p['id']) }}">
+          <div class="form-group">
+            <label>Tu calificación</label>
+            <div class="estrellas-input">
+              {% for i in range(5, 0, -1) %}
+                <input type="radio" name="calificacion" id="estrella{{ i }}" value="{{ i }}"
+                       {% if resena_propia and resena_propia['calificacion']==i %}checked{% endif %}
+                       {% if not resena_propia and i==5 %}{% endif %} required>
+                <label for="estrella{{ i }}" title="{{ i }} estrellas">★</label>
+              {% endfor %}
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Tu comentario (opcional)</label>
+            <textarea name="comentario" rows="3" placeholder="¿Qué te pareció el producto?">{{ resena_propia['comentario'] if resena_propia else '' }}</textarea>
+          </div>
+          <button type="submit" class="btn btn-amarillo">{{ 'Actualizar reseña' if resena_propia else 'Enviar opinión' }}</button>
+        </form>
+      </div>
+    {% else %}
+      <p style="color:var(--texto-sec);margin-bottom:24px;">
+        <a href="{{ url_for('login', next=request.path) }}" style="color:var(--amarillo)">Iniciá sesión</a> para dejar tu opinión sobre este producto.
+      </p>
+    {% endif %}
+
+    {% if resenas %}
+      <div style="display:flex;flex-direction:column;gap:16px;">
+        {% for r in resenas %}
+          <div class="form-box wide" style="margin:0;">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+              <strong>{{ r['usuario_nombre'] }}</strong>
+              <span style="color:var(--texto-sec);font-size:13px;">{{ r['fecha'] }}</span>
+            </div>
+            <div style="color:var(--amarillo);letter-spacing:2px;margin-bottom:8px;">{{ estrellas_html(r['calificacion']) }}</div>
+            {% if r['comentario'] %}<p style="margin:0;">{{ r['comentario'] }}</p>{% endif %}
+          </div>
+        {% endfor %}
+      </div>
+    {% else %}
+      <p class="empty-state">Todavía no hay opiniones para este producto. ¡Sé el primero en calificarlo!</p>
+    {% endif %}
   </div>
 </div>
 {% endblock %}
